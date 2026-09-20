@@ -1,38 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:a="http://android.com">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.discordsender">
 
-    <uses-permission a:name="android.permission.INTERNET" />
-    <uses-permission a:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission a:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
-    <uses-permission a:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission a:name="android.permission.READ_EXTERNAL_STORAGE" a:maxSdkVersion="32" />
-    <uses-permission a:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
-        a:label="Discord Sender"
-        a:theme="@style/Theme.Material3.DayNight"
-        a:allowBackup="true"
-        a:supportsRtl="true">
+        android:label="Discord Sender"
+        android:theme="@style/Theme.Material3.DayNight"
+        android:allowBackup="false"
+        android:supportsRtl="true">
 
         <activity
-            a:name="com.example.discordsender.MainActivity"
-            a:exported="true">
+            android:name="com.example.discordsender.MainActivity"
+            android:exported="true">
             <intent-filter>
-                <action a:name="android.intent.action.MAIN" />
-                <category a:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <service
-            a:name="com.example.discordsender.NotificationService"
-            a:foregroundServiceType="dataSync"
-            a:exported="false" />
+            android:name="com.example.discordsender.NotificationService"
+            android:foregroundServiceType="dataSync"
+            android:exported="false" />
 
         <receiver
-            a:name="com.example.discordsender.BootReceiver"
-            a:exported="true">
+            android:name="com.example.discordsender.BootReceiver"
+            android:exported="true">
             <intent-filter>
-                <action a:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
