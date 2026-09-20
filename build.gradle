@@ -1,6 +1,11 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
 android {
-    namespace 'com.example.discordsender' // Ensure this is set here
-    compileSdk 34 // or your current compileSdk
+    namespace 'com.example.discordsender'
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.example.discordsender"
@@ -10,7 +15,6 @@ android {
         versionName "1.0"
     }
 
-    // Add or update these blocks:
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
@@ -19,4 +23,10 @@ android {
     kotlinOptions {
         jvmTarget = '17'
     }
+}
+
+dependencies {
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.11.0'
 }
