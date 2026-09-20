@@ -16,15 +16,12 @@ jobs:
       with:
         distribution: 'zulu'
         java-version: '17'
-        cache: 'gradle'
 
-    - name: Inject Missing Gradle Wrapper Binary
+    - name: Clean and Generate Fresh Gradle Wrapper
       run: |
-        mkdir -p gradle/wrapper
-        curl -sLo gradle/wrapper/gradle-wrapper.jar https://github.com
-
-    - name: Make Gradle Wrapper Executable
-      run: chmod +x gradlew
+        rm -f gradlew
+        rm -rf gradle/
+        gradle wrapper --gradle-version 8.5
 
     - name: Build Debug APK
       run: ./gradlew assembleDebug
@@ -34,4 +31,3 @@ jobs:
       with:
         name: DiscordSender-APK
         path: app/build/outputs/apk/debug/app-debug.apk
-        
