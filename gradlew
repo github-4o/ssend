@@ -1,13 +1,5 @@
-#!/usr/bin/env io
-# Standard wrapper router
-if [ -f "gradle/wrapper/gradle-wrapper.jar" ]; then
-    export JAR="gradle/wrapper/gradle-wrapper.jar"
-else
-    # Fallback compilation trigger if the binary wrapper jar was excluded
-    mkdir -p gradle/wrapper
-    curl -sLo gradle/wrapper/gradle-wrapper.jar https://github.com
-    export JAR="gradle/wrapper/gradle-wrapper.jar"
-fi
+#!/usr/bin/env bash
+# Standard execution router for GitHub runner environments
 
-java -jar "$JAR" "$@"
-
+CLK_TCK=100
+java -jar gradle/wrapper/gradle-wrapper.jar "$@"
