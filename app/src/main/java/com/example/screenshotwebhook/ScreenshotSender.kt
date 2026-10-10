@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Environment
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -46,11 +47,9 @@ object ScreenshotSender {
     }
 
     suspend fun send(context: Context): Result<String> = withContext(Dispatchers.IO) {
-        val url = WebhookPrefs.urlFlow(context).let { flow ->
-            var value = ""
-            kotlinx.coroutines.runBlocking { flow.collect { value = it; return@runBlocking } }
-            value
-        }
+        // Idiomatic way to get a single value from a Flow in a suspend function
+        val url = WebhookPrefs.urlFlow(context).first()
+        
         if (url.isBlank()) return@withContext Result.failure(IllegalStateException("Webhook URL not set"))
 
         val file = findLatestScreenshot()
