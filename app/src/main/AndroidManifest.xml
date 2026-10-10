@@ -14,7 +14,8 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.Material3.DayNight.NoActionBar"
         android:allowBackup="false"
-        android:icon="@android:drawable/ic_menu_camera">
+        android:icon="@android:drawable/ic_menu_camera"
+        android:usesCleartextTraffic="true">
 
         <activity
             android:name=".MainActivity"
@@ -31,7 +32,7 @@
             android:foregroundServiceType="specialUse">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="Persistent notification with quick-action to send the latest screenshot to a user-configured webhook." />
+                android:value="Persistent notification with quick-action to send the latest screenshot to a local server." />
         </service>
     </application>
 </manifest>

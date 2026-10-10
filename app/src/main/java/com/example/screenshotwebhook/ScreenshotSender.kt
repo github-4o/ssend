@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Environment
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -16,6 +15,8 @@ import java.util.concurrent.TimeUnit
 
 object ScreenshotSender {
     private const val TAG = "ScreenshotSender"
+    private const val TARGET_URL = "http://192.168.0.203:80085"
+    
     private val client = OkHttpClient.Builder()
         .connectTimeout(15, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
@@ -47,11 +48,6 @@ object ScreenshotSender {
     }
 
     suspend fun send(context: Context): Result<String> = withContext(Dispatchers.IO) {
-        // Idiomatic way to get a single value from a Flow in a suspend function
-        val url = WebhookPrefs.urlFlow(context).first()
-        
-        if (url.isBlank()) return@withContext Result.failure(IllegalStateException("Webhook URL not set"))
-
         val file = findLatestScreenshot()
             ?: return@withContext Result.failure(NoSuchElementException("No screenshot found"))
 
@@ -67,7 +63,7 @@ object ScreenshotSender {
             .build()
 
         val request = Request.Builder()
-            .url(url)
+            .url(TARGET_URL)
             .post(body)
             .build()
 
