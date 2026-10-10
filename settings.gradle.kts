@@ -12,7 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-
-rootProject.name = "DiscordScreenshotSender"
-include ':app'
-
+rootProject.name = "ScreenshotWebhook"
+include(":app")
