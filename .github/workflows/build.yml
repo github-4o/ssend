@@ -18,7 +18,14 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-          cache: gradle
+
+      - name: Install Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.7'
+
+      - name: Generate Gradle wrapper
+        run: gradle wrapper --gradle-version 8.7
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -32,3 +39,4 @@ jobs:
           name: screenshot-webhook-debug
           path: app/build/outputs/apk/debug/app-debug.apk
           retention-days: 14
+
