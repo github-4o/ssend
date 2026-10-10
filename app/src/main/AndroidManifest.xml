@@ -32,7 +32,7 @@
             android:foregroundServiceType="specialUse">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="Persistent notification with quick-action to send the latest screenshot to a local server." />
+                android:value="Persistent notification with quick-action to send the latest screenshot to a user-configured local server." />
         </service>
     </application>
 </manifest>

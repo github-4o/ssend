@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Environment
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -15,7 +16,6 @@ import java.util.concurrent.TimeUnit
 
 object ScreenshotSender {
     private const val TAG = "ScreenshotSender"
-    private const val TARGET_URL = "http://192.168.0.203:80085"
     
     private val client = OkHttpClient.Builder()
         .connectTimeout(15, TimeUnit.SECONDS)
@@ -48,6 +48,13 @@ object ScreenshotSender {
     }
 
     suspend fun send(context: Context): Result<String> = withContext(Dispatchers.IO) {
+        val config = ServerPrefs.configFlow(context).first()
+        
+        if (config.ip.isBlank() || config.port.isBlank()) {
+            return@withContext Result.failure(IllegalStateException("Server IP and Port must be configured"))
+        }
+
+        val url = "http://${config.ip}:${config.port}"
         val file = findLatestScreenshot()
             ?: return@withContext Result.failure(NoSuchElementException("No screenshot found"))
 
@@ -63,14 +70,14 @@ object ScreenshotSender {
             .build()
 
         val request = Request.Builder()
-            .url(TARGET_URL)
+            .url(url)
             .post(body)
             .build()
 
         try {
             client.newCall(request).execute().use { response ->
                 if (response.isSuccessful) {
-                    Result.success("Sent ${file.name} (${file.length()} bytes)")
+                    Result.success("Sent ${file.name} to $url")
                 } else {
                     Result.failure(RuntimeException("HTTP ${response.code}: ${response.message}"))
                 }

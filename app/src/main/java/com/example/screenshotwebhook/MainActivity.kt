@@ -50,7 +50,20 @@ class MainActivity : ComponentActivity() {
 fun MainScreen() {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val configFlow = remember { ServerPrefs.configFlow(context) }
+    
+    var currentConfig by remember { mutableStateOf(ServerPrefs.ServerConfig("", "")) }
+    var ipInput by remember { mutableStateOf("") }
+    var portInput by remember { mutableStateOf("") }
     var sending by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        configFlow.collect { config ->
+            currentConfig = config
+            if (ipInput.isBlank()) ipInput = config.ip
+            if (portInput.isBlank()) portInput = config.port
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -61,27 +74,65 @@ fun MainScreen() {
         Text("Screenshot Sender", style = MaterialTheme.typography.headlineMedium)
 
         Text(
-            "A permanent notification is active in your tray. Tap the \"Send Screenshot\" button in the notification to POST the latest image to:\n\nhttp://192.168.0.203:80085",
+            "Configure your local server. The permanent notification in your tray has a \"Send\" button to instantly POST the latest screenshot.",
             style = MaterialTheme.typography.bodyMedium
         )
 
-        Button(
-            onClick = {
-                sending = true
-                scope.launch {
-                    val result = ScreenshotSender.send(context)
-                    sending = false
-                    Toast.makeText(
-                        context,
-                        result.getOrElse { "Failed: ${it.message}" },
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            },
-            enabled = !sending,
+        OutlinedTextField(
+            value = ipInput,
+            onValueChange = { ipInput = it },
+            label = { Text("Server IP") },
+            placeholder = { Text("192.168.0.203") },
+            singleLine = true,
             modifier = Modifier.fillMaxWidth()
-        ) { 
-            Text(if (sending) "Sending…" else "Test Send Now") 
+        )
+
+        OutlinedTextField(
+            value = portInput,
+            onValueChange = { portInput = it },
+            label = { Text("Server Port") },
+            placeholder = { Text("80085") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(
+                onClick = {
+                    scope.launch {
+                        ServerPrefs.setConfig(context, ipInput, portInput)
+                        Toast.makeText(context, "Configuration Saved", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                modifier = Modifier.weight(1f)
+            ) { Text("Save") }
+
+            Button(
+                onClick = {
+                    sending = true
+                    scope.launch {
+                        val result = ScreenshotSender.send(context)
+                        sending = false
+                        Toast.makeText(
+                            context,
+                            result.getOrElse { "Failed: ${it.message}" },
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                },
+                enabled = !sending && currentConfig.ip.isNotBlank() && currentConfig.port.isNotBlank(),
+                modifier = Modifier.weight(1f)
+            ) { Text(if (sending) "Sending…" else "Test Send") }
+        }
+
+        if (currentConfig.ip.isNotBlank() && currentConfig.port.isNotBlank()) {
+            Text(
+                "Active Target: http://${currentConfig.ip}:${currentConfig.port}", 
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.primary
+            )
+        } else {
+            Text("No server configured yet.", style = MaterialTheme.typography.bodySmall)
         }
     }
 }
